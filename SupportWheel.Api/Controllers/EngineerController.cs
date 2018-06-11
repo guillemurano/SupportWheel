@@ -17,7 +17,7 @@ namespace SupportWheel.Api.Controllers
             _service = service;
         }
 
-        [HttpGet]
+        [HttpGet()]
         public ActionResult<List<Engineer>> GetAll()
         {
             return Ok(_service.GetAll().ToList());
@@ -34,7 +34,7 @@ namespace SupportWheel.Api.Controllers
             return engineer;
         }
         
-        [HttpPost]
+        [HttpPost()]
         public IActionResult Create(Engineer engineer)
         {
             _service.Create(engineer);
@@ -42,7 +42,7 @@ namespace SupportWheel.Api.Controllers
             return CreatedAtRoute("GetEngineer", new { id = engineer.Id }, engineer);
         }
 
-        [HttpPut]
+        [HttpPut()]
         public IActionResult Update(Engineer engineer)
         {
             _service.Update(engineer);            

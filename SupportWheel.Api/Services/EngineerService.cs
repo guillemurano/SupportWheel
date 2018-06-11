@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using SupportWheel.Api.Models;
 using SupportWheel.Api.Repositories;
 
@@ -7,7 +9,7 @@ namespace SupportWheel.Api.Services
 {
     public class EngineerService : IEngineerService
     {
-        private IRepository<Engineer> _repository;
+        private static IRepository<Engineer> _repository;
         
         public EngineerService(IRepository<Engineer> repository)
         {
@@ -44,6 +46,11 @@ namespace SupportWheel.Api.Services
         public Engineer GetById(long id)
         {
             return _repository.GetById(id);
+        }
+
+        public static IList<Engineer> Get(Expression<Func<Engineer, bool>> filter = null)
+        {
+            return _repository.Get(filter);
         }
     }
 }

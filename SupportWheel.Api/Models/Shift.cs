@@ -6,6 +6,8 @@ namespace SupportWheel.Api.Models
     {
         public long Id { get; set; }
 
+        public long EngineerId { get; set; }
+
         public DateTime Date { get; set; }
 
         public int Turn { get; set; }

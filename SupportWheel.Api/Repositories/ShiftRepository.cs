@@ -9,7 +9,7 @@ using SupportWheel.Api.Models;
 
 namespace SupportWheel.Api.Repositories
 {
-    public class ShiftRepository : IRepository<Shift>
+    public class ShiftRepository : IShiftRepository
     {
         protected readonly DbContext Context;
         protected readonly DbSet<Shift> Set;

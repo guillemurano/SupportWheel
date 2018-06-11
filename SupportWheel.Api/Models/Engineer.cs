@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SupportWheel.Api.Models
 {
     public class Engineer 
@@ -6,6 +8,6 @@ namespace SupportWheel.Api.Models
         public string Name { get; set; }
         public string Surname { get; set; }
 
-        public virtual Shift Shift { get; set; }
+        public virtual IList<Shift> Shifts { get; set; }
     }
 }
