@@ -12,7 +12,7 @@ namespace SupportWheel.Api.Models
 
         public int Turn { get; set; }
 
-        public virtual bool IsDirty { get; set; }
+        public bool IsDirty { get; set; }
 
         public virtual Engineer Engineer { get; set; }
     }

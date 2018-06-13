@@ -100,17 +100,17 @@ namespace SupportWheel.Api.Repositories
             throw new NotImplementedException();
         }
 
-        public virtual void SaveAll(Expression<Func<Shift, bool>> filter)
+        public virtual void AcceptAll(Expression<Func<Shift, bool>> filter)
         {
-            var shifts = this.Get(filter).Select(s => new Shift() {
-                Id = s.Id, 
-                Engineer = s.Engineer, 
-                Date = s.Date, 
-                Turn = s.Turn, 
-                IsDirty = false                
-            });
+            var shifts = this.Get(filter);
+            
+            foreach (var s in shifts) 
+            {
+                s.IsDirty = false;
+            }
 
             this.Set.UpdateRange(shifts);
+            SaveChanges();
         }
 
         public virtual void Delete(params object[] keyValues)

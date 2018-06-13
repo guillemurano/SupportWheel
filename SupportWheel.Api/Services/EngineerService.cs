@@ -47,10 +47,5 @@ namespace SupportWheel.Api.Services
         {
             return _repository.GetById(id);
         }
-
-        public static IList<Engineer> Get(Expression<Func<Engineer, bool>> filter = null)
-        {
-            return _repository.Get(filter);
-        }
     }
 }

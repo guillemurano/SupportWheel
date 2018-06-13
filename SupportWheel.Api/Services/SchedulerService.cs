@@ -17,6 +17,11 @@ namespace SupportWheel.Api.Services
             _schedulerRepository = repository;
         }
 
+        public IList<Shift> GetAll()
+        {
+            return _schedulerRepository.Get();
+        }
+
         /// <summary>
         /// Get all shifts for the given time lapse
         /// </summary>
@@ -46,9 +51,6 @@ namespace SupportWheel.Api.Services
             //var startDate =  endDate.AddDays(Constants.DAYS_UNREPEATED_SHIFT * (-1));
             var startDate =  endDate.AddDays(-14);
 
-            //dictionary <engineer, availability>
-            //pick random, add to shift and reduce availability
-
             var currentShifts = _schedulerRepository.Get(s => s.Date < endDate && s.Date >= startDate)
                         .GroupBy(s => s.EngineerId)
                         .Select(g => new { EngineerId = g.Key, Turns = g.Sum(i => i.Turn) 
@@ -59,10 +61,12 @@ namespace SupportWheel.Api.Services
                 var pickable = currentShifts.Where(s => s.Turns < 2);
                 var random = new Random();
                 var picked = pickable.ElementAt(random.Next(pickable.Count()));
-                shifts.Add(new Shift(){
-                    Date = DateTime.Today.AddDays(i),
+                var shiftDate = DateTime.Today.AddDays(i);
+                
+                shifts.Add( new Shift() {
+                    Date = shiftDate,
                     EngineerId = picked.EngineerId,
-                    Turn = 1
+                    Turn = shifts.Any(s => s.Date == shiftDate) ? 1 : 2
                 });
             }
 
@@ -77,11 +81,11 @@ namespace SupportWheel.Api.Services
         {
             if (approve)
             {
-                _schedulerRepository.SaveAll(s => s.IsDirty);                
+                _schedulerRepository.AcceptAll(s => s.IsDirty == approve);                
             }
             else
             {
-                _schedulerRepository.DeleteAll(s => s.IsDirty);                
+                _schedulerRepository.DeleteAll(s => s.IsDirty == !approve);                
             }
         }
     }
