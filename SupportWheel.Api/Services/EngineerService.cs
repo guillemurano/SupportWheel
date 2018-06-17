@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using SupportWheel.Api.Models;
 using SupportWheel.Api.Repositories;
 
@@ -7,7 +9,7 @@ namespace SupportWheel.Api.Services
 {
     public class EngineerService : IEngineerService
     {
-        private IRepository<Engineer> _repository;
+        private static IRepository<Engineer> _repository;
         
         public EngineerService(IRepository<Engineer> repository)
         {

@@ -15,7 +15,7 @@ namespace SupportWheel.Tests.Services
         [Fact]
         public void GivenEngineerService_WhenGetAllIsInvoked_ThenShouldReturnAllEngineersInRepository()
         {
-            // Arrange
+            //Given
             var engineers = EngineerStub.CreateMultiple(QUANTITY);
 
             var repository = new Mock<IRepository<Engineer>>();
@@ -24,10 +24,10 @@ namespace SupportWheel.Tests.Services
 
             var service = new EngineerService(repository.Object);
 
-            // Act
+            //When
             var results = service.GetAll();
 
-            // Assert
+            //Then
             results.Should().BeEquivalentTo(engineers);
             repository.Verify(r => r.Get(null, null), Times.Exactly(1));
         }

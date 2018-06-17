@@ -9,7 +9,7 @@ using SupportWheel.Api.Models;
 
 namespace SupportWheel.Api.Repositories
 {
-    public class ShiftRepository : IRepository<Shift>
+    public class ShiftRepository : IShiftRepository
     {
         protected readonly DbContext Context;
         protected readonly DbSet<Shift> Set;
@@ -95,22 +95,28 @@ namespace SupportWheel.Api.Repositories
             this.Set.Add(Shift);
         }
 
+        public virtual bool Insert(IList<Shift> shifts)
+        {
+            this.Set.AddRange(shifts);
+            return this.Context.SaveChanges() == shifts.Count;
+        }
+
         public virtual void Update(Shift Shift)
         {            
             throw new NotImplementedException();
         }
 
-        public virtual void SaveAll(Expression<Func<Shift, bool>> filter)
+        public virtual void AcceptAll(Expression<Func<Shift, bool>> filter)
         {
-            var shifts = this.Get(filter).Select(s => new Shift() {
-                Id = s.Id, 
-                Engineer = s.Engineer, 
-                Date = s.Date, 
-                Turn = s.Turn, 
-                IsDirty = false                
-            });
+            var shifts = this.Get(filter);
+            
+            foreach (var s in shifts) 
+            {
+                s.IsDirty = false;
+            }
 
             this.Set.UpdateRange(shifts);
+            SaveChanges();
         }
 
         public virtual void Delete(params object[] keyValues)
@@ -145,6 +151,11 @@ namespace SupportWheel.Api.Repositories
         public virtual void SaveChanges()
         {
             this.Context.SaveChanges();
+        }
+
+        public virtual IEnumerable<Engineer> GetAvailableEngineers(Expression<Func<Engineer, bool>> filter)
+        {
+            return this.Context.Set<Engineer>().Where(filter);
         }
     }
 }

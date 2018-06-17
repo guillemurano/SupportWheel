@@ -32,8 +32,14 @@ namespace SupportWheel.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Services
             services.AddSingleton<IEngineerService, EngineerService>();
+            services.AddSingleton<ISchedulerService, SchedulerService>();
+            
+            //Repositories
             services.AddSingleton<IRepository<Engineer>, EngineerRepository>();
+            services.AddSingleton<IShiftRepository, ShiftRepository>();
+            
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddScoped<IUrlHelper>(implementationFactory =>
             {
@@ -72,7 +78,8 @@ namespace SupportWheel.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "SupportWheel.Api v1");
                 c.RoutePrefix = string.Empty;
             });
-
+            
+            app.UseDeveloperExceptionPage();
             app.UseHttpsRedirection();
             app.UseMvc();
         }
