@@ -48,27 +48,42 @@ namespace SupportWheel.Api.Services
             _schedulerRepository.DeleteAll(s => s.IsDirty);
             
             var endDate = to.HasValue ? to.Value : DateTime.Today;
-            //var startDate =  endDate.AddDays(Constants.DAYS_UNREPEATED_SHIFT * (-1));
+            
             var startDate =  endDate.AddDays(-14);
 
-            var currentShifts = _schedulerRepository.Get(s => s.Date < endDate && s.Date >= startDate)
-                        .GroupBy(s => s.EngineerId)
-                        .Select(g => new { EngineerId = g.Key, Turns = g.Sum(i => i.Turn) 
+            var availableEngineers = _schedulerRepository.GetAvailableEngineers(e => 
+                    e.Shifts.Count(s => s.Date < endDate && s.Date >= startDate) < 2)
+                    .GroupBy(e => e.Id)
+                    .Select(g => new { EngineerId = g.Key, Turns = g.Sum( e => e.Shifts.Sum(s => s.Turn ))})
+                    .ToList();
+
+            for(var i = 0; i <= (endDate - DateTime.Today).TotalDays; i++)
+            {
+                var shiftDate = DateTime.Today.AddDays(i);
+                var t = 1;
+
+                while(t <= 2 && availableEngineers.Count(e => e.Turns < 2) != 0)
+                {
+                    var pickableEng = availableEngineers.Where(e => e.Turns < 2);
+                    var pickedIndex = new Random().Next(pickableEng.Count());
+                    var picked = pickableEng.ElementAt(pickedIndex);
+
+                    shifts.Add( new Shift() {
+                        Date = shiftDate,
+                        EngineerId = picked.EngineerId,
+                        Turn = t,
+                        IsDirty = true
                     });
 
-            for(var i = 0; i < (endDate - DateTime.Today).TotalDays; i++)
-            {
-                var pickable = currentShifts.Where(s => s.Turns < 2);
-                var random = new Random();
-                var picked = pickable.ElementAt(random.Next(pickable.Count()));
-                var shiftDate = DateTime.Today.AddDays(i);
-                
-                shifts.Add( new Shift() {
-                    Date = shiftDate,
-                    EngineerId = picked.EngineerId,
-                    Turn = shifts.Any(s => s.Date == shiftDate) ? 1 : 2
-                });
+                    availableEngineers.RemoveAt(pickedIndex);
+                    availableEngineers.Add(
+                        new { EngineerId = picked.EngineerId, Turns = picked.Turns + 1 });
+                    
+                    t++;
+                }
             }
+            
+            _schedulerRepository.Insert(shifts);
 
             return shifts;
         }

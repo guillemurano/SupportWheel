@@ -17,19 +17,27 @@ namespace SupportWheel.Tests.Stubs
         public static List<Shift> CreateToDate(DateTime? date)
         {
             var quantity = date.HasValue ? 
-                (int)(DateTime.Today - date.Value).TotalDays : 1;
+                (int)(date.Value - DateTime.Today).TotalDays : 1;
+                
+            var shifts = new List<Shift>();
 
-            return CreateWithDirtyStatus(quantity, true);
+            shifts = Builder<Shift>
+                .CreateListOfSize(quantity)
+                .All().With(s => s.IsDirty = true)
+                .With(s => s.Turn = new Random().Next(1,2))
+                .Build() as List<Shift>;
+
+            return shifts;
         }
 
         public static List<Shift> CreateWithDirtyStatus(int quantity, bool isDirty)
         {
-            var id = Guid.NewGuid();
             var shifts = new List<Shift>();
 
             shifts = Builder<Shift>
                 .CreateListOfSize(quantity)
                 .All().With(s => s.IsDirty = isDirty)
+                .With(s => s.Turn = new Random().Next(1,2))
                 .Build() as List<Shift>;
 
             return shifts;

@@ -95,6 +95,12 @@ namespace SupportWheel.Api.Repositories
             this.Set.Add(Shift);
         }
 
+        public virtual bool Insert(IList<Shift> shifts)
+        {
+            this.Set.AddRange(shifts);
+            return this.Context.SaveChanges() == shifts.Count;
+        }
+
         public virtual void Update(Shift Shift)
         {            
             throw new NotImplementedException();
@@ -145,6 +151,11 @@ namespace SupportWheel.Api.Repositories
         public virtual void SaveChanges()
         {
             this.Context.SaveChanges();
+        }
+
+        public virtual IEnumerable<Engineer> GetAvailableEngineers(Expression<Func<Engineer, bool>> filter)
+        {
+            return this.Context.Set<Engineer>().Where(filter);
         }
     }
 }
